@@ -8,10 +8,9 @@ using Reactive.Bindings.Extensions;
 namespace Captura.ViewModels
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class FileNameFormatViewModel : ViewModelBase
+    public class FileNameFormatViewModel
     {
-        public FileNameFormatViewModel(Settings Settings, LanguageManager LanguageManager)
-            : base(Settings, LanguageManager)
+        public FileNameFormatViewModel(Settings Settings)
         {
             FilenameFormat = new ReactiveProperty<string>(Settings.ObserveProperty(M => M.FilenameFormat));
 
@@ -57,8 +56,8 @@ namespace Captura.ViewModels
             })
         };
 
-        public ReactiveProperty<string> FilenameFormat { get; }
+        public IReactiveProperty<string> FilenameFormat { get; }
 
-        public ReadOnlyReactiveProperty<string> FilenamePreview { get; }
+        public IReadOnlyReactiveProperty<string> FilenamePreview { get; }
     }
 }
