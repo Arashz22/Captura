@@ -2,11 +2,12 @@
 using System.Linq;
 using System.Reflection;
 using Captura.Models;
+using Reactive.Bindings;
 
 namespace Captura.ViewModels
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class LicensesViewModel : NotifyPropertyChanged
+    public class LicensesViewModel
     {
         public LicensesViewModel()
         {
@@ -20,24 +21,13 @@ namespace Captura.ViewModels
 
                 if (Licenses.Length > 0)
                 {
-                    SelectedLicense = Licenses[0];
+                    SelectedLicense.Value = Licenses[0];
                 }
             }
         }
 
         public FileContentItem[] Licenses { get; }
 
-        FileContentItem _selectedLicense;
-
-        public FileContentItem SelectedLicense
-        {
-            get => _selectedLicense;
-            set
-            {
-                _selectedLicense = value;
-                
-                OnPropertyChanged();
-            }
-        }
+        public IReactiveProperty<FileContentItem> SelectedLicense { get; } = new ReactiveProperty<FileContentItem>();
     }
 }

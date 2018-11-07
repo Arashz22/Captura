@@ -7,7 +7,7 @@
         DataContext="{Binding LicensesViewModel, Source={StaticResource ServiceLocator}}">
     <DockPanel Background="{DynamicResource WindowBackground}">
         <ListView ItemsSource="{Binding Licenses}"
-                  SelectedItem="{Binding SelectedLicense, Mode=TwoWay}"
+                  SelectedItem="{Binding SelectedLicense.Value, Mode=TwoWay}"
                   Width="200"
                   Padding="5,0"
                   BorderThickness="0,0,0.6,0">
@@ -18,7 +18,7 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <Border DataContext="{Binding SelectedLicense}">
+        <Border DataContext="{Binding SelectedLicense.Value}">
             <DockPanel>
                 <Label Margin="5"
                        DockPanel.Dock="Top">
