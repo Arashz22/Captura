@@ -15,7 +15,7 @@
 
             <ListView Margin="5"
                       ItemsSource="{Binding Collection}"
-                      SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                      SelectedItem="{Binding SelectedItem.Value, Mode=TwoWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="Image"/>
@@ -27,19 +27,19 @@
 
             <DockPanel Margin="10"
                        VerticalAlignment="Top"
-                       Visibility="{Binding SelectedItem, Converter={StaticResource NotNullConverter}}">
+                       Visibility="{Binding SelectedItem.Value, Converter={StaticResource NotNullConverter}}">
                 <captura:ImageOverlaySettingsControl DockPanel.Dock="Bottom"
                                                      Margin="0,5"
-                                                     DataContext="{Binding SelectedItem}"/>
+                                                     DataContext="{Binding SelectedItem.Value}"/>
 
                 <DockPanel DockPanel.Dock="Top">
                     <captura:ModernButton ToolTip="Remove"
                                           Command="{Binding RemoveCommand}"
-                                          CommandParameter="{Binding SelectedItem}"
+                                          CommandParameter="{Binding SelectedItem.Value}"
                                           IconData="{StaticResource IconClose}"
                                           DockPanel.Dock="Right"/>
 
-                    <CheckBox IsChecked="{Binding SelectedItem.Display, Mode=TwoWay}"
+                    <CheckBox IsChecked="{Binding SelectedItem.Value.Display, Mode=TwoWay}"
                               Content="Display"/>
                 </DockPanel>
 
@@ -49,9 +49,9 @@
                 <Button Content="..."
                         DockPanel.Dock="Right"
                         Command="{Binding ChangeCommand}"
-                        CommandParameter="{Binding SelectedItem}"/>
+                        CommandParameter="{Binding SelectedItem.Value}"/>
 
-                <TextBox Text="{Binding SelectedItem.Source, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding SelectedItem.Value.Source, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          Margin="5,0"/>
             </DockPanel>
         </DockPanel>

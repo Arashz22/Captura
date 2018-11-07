@@ -13,7 +13,7 @@
 
             <ListView Margin="5"
                       ItemsSource="{Binding Collection}"
-                      SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                      SelectedItem="{Binding SelectedItem.Value, Mode=TwoWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="Overlay"/>
@@ -23,28 +23,28 @@
 
             <GridSplitter Width="1"/>
 
-            <DockPanel Visibility="{Binding SelectedItem, Converter={StaticResource NotNullConverter}}"
+            <DockPanel Visibility="{Binding SelectedItem.Value, Converter={StaticResource NotNullConverter}}"
                        Margin="10"
                        VerticalAlignment="Top">
                 <captura:TextOverlaySettingsControl Margin="0,5"
-                                                    DataContext="{Binding SelectedItem}"
+                                                    DataContext="{Binding SelectedItem.Value}"
                                                     DockPanel.Dock="Bottom"/>
 
                 <DockPanel DockPanel.Dock="Top">
                     <captura:ModernButton ToolTip="Remove"
                                           Command="{Binding RemoveCommand}"
-                                          CommandParameter="{Binding SelectedItem}"
+                                          CommandParameter="{Binding SelectedItem.Value}"
                                           IconData="{StaticResource IconClose}"
                                           DockPanel.Dock="Right"/>
 
-                    <CheckBox IsChecked="{Binding SelectedItem.Display, Mode=TwoWay}"
+                    <CheckBox IsChecked="{Binding SelectedItem.Value.Display, Mode=TwoWay}"
                               Content="Display"/>
                 </DockPanel>
 
                 <Label Content="Text"
                        ContentStringFormat="{}{0}: "/>
 
-                <TextBox Text="{Binding SelectedItem.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                <TextBox Text="{Binding SelectedItem.Value.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          Margin="5,0"/>
             </DockPanel>
         </DockPanel>

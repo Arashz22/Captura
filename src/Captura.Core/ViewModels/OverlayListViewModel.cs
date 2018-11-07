@@ -1,9 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Reactive.Bindings;
 
 namespace Captura.ViewModels
 {
-    public abstract class OverlayListViewModel<T> : NotifyPropertyChanged where T : class, new()
+    public abstract class OverlayListViewModel<T> where T : class, new()
     {
         protected OverlayListViewModel(ObservableCollection<T> Collection)
         {
@@ -17,7 +18,7 @@ namespace Captura.ViewModels
 
             if (Collection.Count > 0)
             {
-                SelectedItem = Collection[0];
+                SelectedItem.Value = Collection[0];
             }
         }
 
@@ -27,7 +28,7 @@ namespace Captura.ViewModels
 
             _collection.Add(item);
 
-            SelectedItem = item;
+            SelectedItem.Value = item;
         }
 
         void OnRemoveExecute(object O)
@@ -37,7 +38,7 @@ namespace Captura.ViewModels
                 _collection.Remove(setting);
             }
 
-            SelectedItem = _collection.Count > 0 ? _collection[0] : null;
+            SelectedItem.Value = _collection.Count > 0 ? _collection[0] : null;
         }
 
         readonly ObservableCollection<T> _collection;
@@ -48,17 +49,6 @@ namespace Captura.ViewModels
 
         public ICommand RemoveCommand { get; }
 
-        T _selectedItem;
-
-        public T SelectedItem
-        {
-            get => _selectedItem;
-            set
-            {
-                _selectedItem = value;
-                
-                OnPropertyChanged();
-            }
-        }
+        public IReactiveProperty<T> SelectedItem { get; } = new ReactiveProperty<T>();
     }
 }
