@@ -1,23 +1,41 @@
 ﻿using System.Collections.Generic;
+using System.Reactive.Linq;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 
 namespace Captura.ViewModels
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class ProxySettingsViewModel : ViewModelBase
+    public class ProxySettingsViewModel
     {
-        public ProxySettingsViewModel(Settings Settings, LanguageManager LanguageManager)
-            : base(Settings, LanguageManager)
+        public ProxySettingsViewModel(Settings Settings)
         {
-            Settings.Proxy.PropertyChanged += (S, E) => RaiseAllChanged();
+            ProxySettings = Settings.Proxy;
+
+            var proxyTypeObservable = ProxySettings.ObserveProperty(M => M.Type);
+
+            CanAuth = proxyTypeObservable
+                .Select(M => M != ProxyType.None)
+                .ToReadOnlyReactiveProperty();
+
+            CanAuthCred = new[]
+            {
+                CanAuth,
+                ProxySettings.ObserveProperty(M => M.Authenticate)
+            }.Merge().ToReadOnlyReactiveProperty();
+
+            CanHost = proxyTypeObservable
+                .Select(M => M == ProxyType.Manual)
+                .ToReadOnlyReactiveProperty();
         }
 
-        public ProxySettings ProxySettings => Settings.Proxy;
+        public ProxySettings ProxySettings { get; }
 
-        public bool CanAuth => ProxySettings.Type != ProxyType.None;
+        public IReadOnlyReactiveProperty<bool> CanAuth { get; }
 
-        public bool CanAuthCred => CanAuth && ProxySettings.Authenticate;
+        public IReadOnlyReactiveProperty<bool> CanAuthCred { get; }
 
-        public bool CanHost => ProxySettings.Type == ProxyType.Manual;
+        public IReadOnlyReactiveProperty<bool> CanHost { get; }
 
         public IEnumerable<ProxyType> ProxyTypes { get; } = new[] { ProxyType.None, ProxyType.System, ProxyType.Manual };
     }
