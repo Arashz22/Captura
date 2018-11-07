@@ -1,5 +1,9 @@
 ﻿using System.IO;
+using System.Linq;
+using System.Reactive.Linq;
 using Captura.Models;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 
 namespace Captura.ViewModels
 {
@@ -7,7 +11,21 @@ namespace Captura.ViewModels
     public class FileNameFormatViewModel : ViewModelBase
     {
         public FileNameFormatViewModel(Settings Settings, LanguageManager LanguageManager)
-            : base(Settings, LanguageManager) { }
+            : base(Settings, LanguageManager)
+        {
+            FilenameFormat = new ReactiveProperty<string>(Settings.ObserveProperty(M => M.FilenameFormat));
+
+            FilenamePreview = FilenameFormat.Select(M =>
+                {
+                    M = Path.GetInvalidFileNameChars()
+                        .Aggregate(M, (Current, InvalidChar) => Current.Replace(InvalidChar.ToString(), ""));
+
+                    Settings.FilenameFormat = M;
+
+                    return Settings.GetFileName(".mp4");
+                })
+                .ToReadOnlyReactiveProperty();
+        }
 
         public FileNameFormatGroup[] FormatGroups { get; } =
         {
@@ -39,26 +57,8 @@ namespace Captura.ViewModels
             })
         };
 
-        public string FilenameFormat
-        {
-            get => Settings.FilenameFormat;
-            set
-            {
-                var invalidChars = Path.GetInvalidFileNameChars();
+        public ReactiveProperty<string> FilenameFormat { get; }
 
-                foreach (var invalidChar in invalidChars)
-                {
-                    value = value.Replace(invalidChar.ToString(), "");
-                }
-
-                Settings.FilenameFormat = value;
-
-                OnPropertyChanged();
-
-                RaisePropertyChanged(nameof(FilenamePreview));
-            }
-        }
-
-        public string FilenamePreview => Settings.GetFileName(".mp4");
+        public ReadOnlyReactiveProperty<string> FilenamePreview { get; }
     }
 }
