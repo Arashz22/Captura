@@ -13,7 +13,7 @@
     </Window.InputBindings>
     <DockPanel Background="{DynamicResource WindowBackground}">
         <ListView ItemsSource="{Binding CrashLogs}"
-                  SelectedValue="{Binding SelectedCrashLog, Mode=TwoWay}"
+                  SelectedValue="{Binding SelectedCrashLog.Value, Mode=TwoWay}"
                   Width="160"
                   Padding="5,0"
                   BorderThickness="0,0,0.6,0">
@@ -24,7 +24,7 @@
             </ListView.ItemTemplate>
         </ListView>
         <DockPanel DockPanel.Dock="Top"
-                   Visibility="{Binding SelectedCrashLog, Converter={StaticResource NotNullConverter}}"
+                   Visibility="{Binding SelectedCrashLog.Value, Converter={StaticResource NotNullConverter}}"
                    Margin="5">
             <local:ModernButton IconData="{StaticResource IconDelete}"
                                 DockPanel.Dock="Right"
@@ -48,7 +48,7 @@
             </Button>
         </DockPanel>
 
-        <Border DataContext="{Binding SelectedCrashLog}"
+        <Border DataContext="{Binding SelectedCrashLog.Value}"
                 Margin="10,5">
             <DockPanel>
                 <Label Margin="5"

@@ -1,18 +1,22 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows.Input;
 using Captura.Models;
+using Reactive.Bindings;
 using Screna;
 
 namespace Captura.ViewModels
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class CrashLogsViewModel : NotifyPropertyChanged
+    public class CrashLogsViewModel
     {
         public CrashLogsViewModel()
         {
             var folder = Path.Combine(ServiceProvider.SettingsDir, "Crashes");
+
+            var canExecute = SelectedCrashLog.Select(M => M != null);
 
             if (Directory.Exists(folder))
             {
@@ -23,44 +27,32 @@ namespace Captura.ViewModels
 
                 if (CrashLogs.Count > 0)
                 {
-                    SelectedCrashLog = CrashLogs[0];
+                    SelectedCrashLog.Value = CrashLogs[0];
                 }
             }
 
-            CopyToClipboardCommand = new DelegateCommand(() => SelectedCrashLog?.Content.WriteToClipboard());
+            CopyToClipboardCommand = canExecute.ToReactiveCommand()
+                .WithSubscribe(() => SelectedCrashLog.Value.Content.WriteToClipboard());
 
-            RemoveCommand = new DelegateCommand(OnRemoveExecute);
+            RemoveCommand = canExecute.ToReactiveCommand()
+                .WithSubscribe(OnRemoveExecute);
         }
 
         void OnRemoveExecute()
         {
-            if (SelectedCrashLog != null)
+            if (File.Exists(SelectedCrashLog.Value.FileName))
             {
-                if (File.Exists(SelectedCrashLog.FileName))
-                {
-                    File.Delete(SelectedCrashLog.FileName);
-                }
-
-                CrashLogs.Remove(SelectedCrashLog);
-
-                SelectedCrashLog = CrashLogs.Count > 0 ? CrashLogs[0] : null;
+                File.Delete(SelectedCrashLog.Value.FileName);
             }
+
+            CrashLogs.Remove(SelectedCrashLog.Value);
+
+            SelectedCrashLog.Value = CrashLogs.Count > 0 ? CrashLogs[0] : null;
         }
 
         public ObservableCollection<FileContentItem> CrashLogs { get; }
 
-        FileContentItem _selectedCrashLog;
-
-        public FileContentItem SelectedCrashLog
-        {
-            get => _selectedCrashLog;
-            set
-            {
-                _selectedCrashLog = value;
-                
-                OnPropertyChanged();
-            }
-        }
+        public IReactiveProperty<FileContentItem> SelectedCrashLog { get; } = new ReactiveProperty<FileContentItem>();
 
         public ICommand CopyToClipboardCommand { get; }
 
